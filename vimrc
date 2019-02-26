@@ -408,3 +408,18 @@ let g:airline#extensions#whitespace#enabled = 0
 "let g:airline_symbols.branch = '⭠'
 "let g:airline_symbols.readonly = '⭤'
 "let g:airline_symbols.linenr = '⭡'
+
+
+map <C-b> :call CompileRunGcc()<CR>
+function! CompileRunGcc()
+    exec "w"
+    if &filetype == 'python'
+        exec "!python %"
+    elseif &filetype == 'sh'
+        exec "!./%"
+    else
+        exec echo "you choose right file"
+    endif
+endfunc
+endfunc
+
