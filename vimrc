@@ -421,5 +421,5 @@ function! CompileRunGcc()
         exec echo "you choose right file"
     endif
 endfunc
-endfunc
+
 
