@@ -1,0 +1,7 @@
+apt-get install privoxy
+sudo vim /etc/privoxy/config
+forward-socks5 / 127.0.0.1:1080
+systemctl restart privoxy
+export http_proxy="ip:port"
+export https_proxy="ip:prot"
+source ~/.bashrc
