@@ -91,6 +91,8 @@ Plug 't9md/vim-choosewin'
 Plug 'lilydjwg/colorizer'
 " Ack code search (requires ack installed in the system)
 Plug 'mileszs/ack.vim'
+" Enable folding
+Plug 'tmhedberg/SimpylFold'
 if has('python')
     " YAPF formatter for Python
     Plug 'pignacio/vim-yapf-format'
@@ -113,6 +115,8 @@ Plug 'vim-scripts/matchit.zip'
 Plug 'vim-scripts/Wombat'
 " Yank history navigation
 Plug 'vim-scripts/YankRing.vim'
+"Plug 'taglist.vim'
+"Plug 'vim-scripts/taglist.vim'
 
 " Tell vim-plug we finished declaring plugins, so it can load them
 call plug#end()
@@ -397,6 +401,10 @@ let g:choosewin_overlay_enable = 1
 let g:airline_powerline_fonts = 0
 let g:airline_theme = 'bubblegum'
 let g:airline#extensions#whitespace#enabled = 0
+" set folding
+set foldmethod=indent
+set foldlevel=99
+nnoremap <Space> za
 
 " to use fancy symbols for airline, uncomment the following lines and use a
 " patched font (more info on the README.rst)
@@ -423,3 +431,16 @@ function! CompileRunGcc()
         exec echo "you choose right file"
     endif
 endfunc
+"nmap <C-n> :NERDTree<cr>
+nnoremap <C-j> <C-W><C-J>
+nnoremap <C-k> <C-W><C-K>
+nnoremap <C-l> <C-W><C-L>
+nnoremap <C-h> <C-W><C-H>
+nnoremap <C-f> :Tlist<cr>
+
+set tags=tags
+
+
+set fileencodings=utf-8,gbk,chinese
+let &termencoding=&encoding
+set mouse=a
