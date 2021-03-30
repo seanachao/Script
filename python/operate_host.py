@@ -14,7 +14,7 @@ for i in hosts:
     #print (red("hello"))
     #if ("47" in i):
     #    break
-    c = Connection("root@%s"%(i),connect_kwargs={"password":"liuchao"})
+    c = Connection("root@%s"%(i),connect_kwargs={"password":"theshimima???"})
     logger.info("{} is cleaned".format(i))
     #cmd = " curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose"
     #result = c.run(cmd)
