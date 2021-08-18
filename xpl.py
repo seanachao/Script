@@ -14,6 +14,15 @@ def start():
         return gdb.debug(elf.path,gdbscript=gs)
     else:
         return process(elf.path)
+io = start()
+def recv_message(fn):
+    @wraps(fn)
+    #data = io.recvuntil("choice: ")
+    def recv(*args,**kwargs):
+        message = io.recvuntil("choice")
+        print(message)
+        return fn(*args,**kwargs)
+    return recv 
 def interactive():
     io.interactive()
 
