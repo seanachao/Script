@@ -1,0 +1,109 @@
+'* 合并不同的sheet到一个sheet中
+'
+Sub CopyDetailSheetsToSingleWorkbook()
+    Dim folderPath As String
+    Dim fileName As String
+    Dim wbSource As Workbook
+    Dim wsSource As Worksheet
+    Dim wsTarget As Worksheet
+    Dim targetWb As Workbook
+    Dim lastRow As Long
+    Dim nextRow As Long
+    Dim startRow As Long
+    Dim lastRowN As Long
+    Dim i As Long
+    ' 设置文件夹路径
+    folderPath = ThisWorkbook.Path & "\报销集合\日常报销\"
+    
+    ' 创建一个新的工作簿用于保存合并结果
+    Set targetWb = Workbooks.Add
+    Set wsTarget = targetWb.Sheets(1)
+    wsTarget.Name = "合并结果"
+    
+    ' 获取文件夹中第一个.xlsx文件
+    fileName = Dir(folderPath & "*.xlsx")
+    
+    ' 初始化目标表的行位置
+    nextRow = 1
+    startRow = 1 ' 首个文件从第一行开始
+    Application.DisplayAlerts = False
+    ' 遍历所有.xlsx文件
+    Do While fileName <> ""
+        ' 打开当前文件
+        Set wbSource = Workbooks.Open(folderPath & fileName)
+        
+        ' 查找名为"明细"的工作表
+        On Error Resume Next
+        Set wsSource = wbSource.Sheets("明细")
+        On Error GoTo 0
+        
+        ' 如果"明细"表存在，则复制其内容
+        If Not wsSource Is Nothing Then
+            ' 获取"明细"表的最后一行
+            lastRow = wsSource.Cells(wsSource.Rows.Count, 1).End(xlUp).Row
+            
+            ' 复制"明细"表的内容到目标表中，保留原格式
+            If startRow = 1 Then
+                ' 首个文件，复制所有内容并多复制一行
+                wsSource.Range(wsSource.Cells(1, 1), wsSource.Cells(lastRow + 1, wsSource.Columns.Count)).Copy
+            Else
+                ' 后续文件，复制第三行及其以后的内容，并多复制一行
+                wsSource.Range(wsSource.Cells(3, 1), wsSource.Cells(lastRow + 1, wsSource.Columns.Count)).Copy
+            End If
+            
+            wsTarget.Cells(nextRow, 1).PasteSpecial Paste:=xlPasteAll
+            
+            ' 更新下一行位置
+            If startRow = 1 Then
+                nextRow = nextRow + lastRow + 1 ' 增加一行
+            Else
+                nextRow = nextRow + lastRow - 2 + 1 ' 减去前两行并增加一行
+            End If
+        End If
+        
+        ' 关闭当前文件
+        wbSource.Close SaveChanges:=False
+        
+        ' 获取下一个文件
+        fileName = Dir
+        startRow = 3 ' 从第二个文件开始只复制第三行及其以后的内容
+    Loop
+    
+    ' 自动调整列宽
+    ' wsTarget.Columns.AutoFit
+    
+
+    'Dim ws As Worksheet
+
+    
+    ' 设置要修改的工作表
+    ' Set ws = ThisWorkbook.Sheets("Sheet1") ' 请根据实际工作表名称修改
+    
+    ' 设置各列的宽度
+    wsTarget.Columns("A").columnWidth = 6.89
+    wsTarget.Columns("B").columnWidth = 11
+    wsTarget.Columns("C").columnWidth = 13
+    wsTarget.Columns("D").columnWidth = 36.89
+    wsTarget.Columns("E").columnWidth = 8.33
+    wsTarget.Columns("F").columnWidth = 11
+    wsTarget.Columns("G").columnWidth = 8
+    
+    ' 设置第一行的行高
+    wsTarget.Rows(1).RowHeight = 20.3
+    
+    ' 获取工作表的最后一行
+    lastRowN = wsTarget.Cells(wsTarget.Rows.Count, 1).End(xlUp).Row
+    
+    ' 设置每一行的行高为15（从第二行开始）
+    For i = 2 To lastRowN
+        wsTarget.Rows(i).RowHeight = 15
+    Next i
+    ' 将文件保存到指定路径
+    ' targetWb.SaveAs "to\日常报销.xlsx"
+    targetWb.SaveAs ThisWorkbook.Path & "\to\日常报销.xlsx"
+
+    ' 提示操作完成
+    MsgBox "所有'明细'表已成功复制并保存到to\日常报销.xlsx！"
+End Sub
+
+
