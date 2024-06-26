@@ -1,0 +1,32 @@
+Sub MergeWordDocuments()
+    Dim mainDoc As Document
+    Dim filePath As String
+    Dim fileName As String
+    Dim doc As Document
+    Dim rng As Range
+    
+    ' 创建一个新的文档
+    Set mainDoc = Documents.Add
+    
+    ' 设置相对路径的目录
+    filePath = ThisDocument.Path & "\报销集合\支付记录"
+    
+    ' 获取目录中的第一个文件
+    fileName = Dir(filePath & "\*.docx")
+    
+    ' 循环遍历目录中的所有Word文件并合并到mainDoc中
+    Do While fileName <> ""
+        Set doc = Documents.Open(filePath & "\" & fileName)
+        Set rng = doc.Range
+        rng.Copy
+        mainDoc.Range(mainDoc.Content.End - 1).Paste
+        doc.Close False
+        fileName = Dir
+    Loop
+    
+    ' 保存合并后的文档
+    mainDoc.SaveAs2 filePath & "\a.docx"
+    mainDoc.Close
+    
+    MsgBox "所有文件已成功合并到 a.docx 中！", vbInformation
+End Sub
