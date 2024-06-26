@@ -1,0 +1,97 @@
+'* 将同一个文件夹下的所有的工作表中的sheet复制到同一个目标文件中
+'*
+'*
+Sub CopySheetsFromMultipleFolders()
+    Dim folderPaths As Variant
+    Dim targetFiles As Variant
+    Dim i As Integer
+    
+    ' 定义文件夹路径和对应的目标文件
+    folderPaths = Array("\报销集合\日常报销\", "\报销集合\交通费报销明细\", "\报销集合\加班餐申请附件\")
+    targetFiles = Array("\to\日常报销.xlsx", "\to\交通费报销明细.xlsx", "\to\加班餐申请附件.xlsx")
+    
+    ' 遍历所有文件夹并复制工作表到相应的目标文件
+    For i = LBound(folderPaths) To UBound(folderPaths)
+        CopySheetsFromFolderToTarget CStr(ThisWorkbook.Path & folderPaths(i)), CStr(ThisWorkbook.Path & targetFiles(i))
+    Next i
+    
+    ' 提示操作完成
+    MsgBox "所有工作表已成功复制到相应的文件！"
+End Sub
+
+Sub CopySheetsFromFolderToTarget(folderPath As String, targetFile As String)
+    Dim wbTarget As Workbook
+    Dim wbSource As Workbook
+    Dim ws As Worksheet
+    Dim fileName As String
+    Dim newSheetName As String
+    Dim j As Integer
+    
+    ' 关闭更新以提高速度
+    Application.ScreenUpdating = False
+    
+    ' 检查目标文件是否存在
+    If Dir(targetFile) = "" Then
+        ' 如果目标文件不存在则创建
+        Set wbTarget = Workbooks.Add
+        
+        wbTarget.SaveAs fileName:=targetFile, FileFormat:=xlOpenXMLWorkbook
+
+        'wbTarget.SaveAs fileName:=targetFile, FileFormat:=xlExcel8
+    Else
+        ' 如果目标文件存在则打开
+        Set wbTarget = Workbooks.Open(targetFile)
+    End If
+    
+    ' 获取文件夹中第一个.xlsx文件
+    fileName = Dir(folderPath & "*.xlsx")
+    
+    ' 遍历所有.xlsx文件
+    Do While fileName <> ""
+        ' 打开当前文件
+        Set wbSource = Workbooks.Open(folderPath & fileName)
+        
+        ' 遍历当前文件中的所有工作表
+        For Each ws In wbSource.Sheets
+            ' 确定新工作表名称，避免重复
+            newSheetName = ws.Name
+            j = 1
+            Do While SheetExists(newSheetName, wbTarget)
+                newSheetName = ws.Name & "_" & j
+                j = j + 1
+            Loop
+            
+            ' 在目标文件中新建一个工作表
+            ' wbTarget.Sheets.Add After:=wbTarget.Sheets(wbTarget.Sheets.Count)
+            ' 复制当前工作表到目标文件中
+            ws.Copy Before:=wbTarget.Sheets(wbTarget.Sheets.Count)
+            ' 重命名新建的工作表名称为确定的名称
+            wbTarget.Sheets(wbTarget.Sheets.Count - 1).Name = newSheetName
+        Next ws
+        
+        ' 关闭当前文件
+        wbSource.Close SaveChanges:=False
+        
+        ' 获取下一个文件
+        fileName = Dir
+    Loop
+    
+    ' 保存并关闭目标文件
+    wbTarget.Close SaveChanges:=True
+    
+    ' 恢复更新
+    Application.ScreenUpdating = True
+End Sub
+
+Function SheetExists(sheetName As String, ByVal wb As Workbook) As Boolean
+    Dim ws As Worksheet
+    On Error Resume Next
+    Set ws = wb.Sheets(sheetName)
+    On Error GoTo 0
+    SheetExists = Not ws Is Nothing
+End Function
+
+
+
+
+#测试没问题
